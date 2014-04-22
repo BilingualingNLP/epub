@@ -1,5 +1,7 @@
 package com.bilingualing.epub.OEBPS
 
+import groovy.xml.MarkupBuilder
+
 /**
  * Created with IntelliJ IDEA.
  * User: jamaaltaylor
@@ -9,6 +11,12 @@ package com.bilingualing.epub.OEBPS
  */
 class Opf
 {
+    def writer = new StringWriter();
+    def xml = new MarkupBuilder(writer);
+    def xmlnsDc = "xmlns:dc"
+    def uniqueIdentifier = "unique-identifier"
+    def dcTitle = "dc:title"
+    def dcCreator = "dc:creator"
     def contentOpf;
     def newLine = System.getProperty("line.separator");
 
@@ -17,130 +25,50 @@ class Opf
         super();
     }
 
-    public Opf xmlDeclarations()
+    def generateOpf(def metaInfo, def itemrefs)
     {
-        contentOpf = "<?xml version='1.0' encoding='utf-8'?>" + newLine;
-        return this
+        xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
+        xml.package(xmlns:'http://www.idpf.org/2007/opf', (xmlnsDc):'http://purl.org/dc/elements/1.1/', (uniqueIdentifier):'bookid', version:'2.0')
+        {
+            metadata()
+            {
+                generateMetadata(metaInfo)
+            }
+
+        }
     }
 
-    public openPackage()
+    /**
+     * The two required terms are title and identifier.
+     * According to the EPUB specification, the identifier must be a unique value,
+     * although it's up to the digital book creator to define that unique value.
+     * For book publishers, this field will typically contain an ISBN or Library of Congress number.
+     * For other EPUB creators, consider using a URL or a large, randomly generated unique user ID (UUID).
+     * Note that the value of the attribute unique-identifier must match the ID attribute of the dc:identifier element.
+     */
+    def generateMetadata(def metaInfo)
     {
-        contentOpf = "<package xmlns=\"http://www.idpf.org/2007/opf\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" unique-identifier=\"bookid\" version=\"2.0\">"+newLine;
-        return this;
+        dc:title(metaInfo.title)
+        dc:creator(metaInfo.creator)
+        dc:identifier(id:'bookid', metaInfo.identifier)
+        if(metaInfo.language1){dc:language(metaInfo.language1)}
+        if(metaInfo.language2){dc:language(metaInfo.language2)}
+        if(metaInfo.date){dc:data(metaInfo.publicationDate)}
+        if(metaInfo.publisher){dc:publisher(metaInfo.publisher)}
+
+        meta('', name:'cover', content:'conver-image')
     }
 
-    public closePackage()
+    def generateSpine(def itemrefs)
     {
-        contentOpf="</package>";
-        return this;
+        spine(toc:'ncx')
+        {
+            itemrefs.each{ itemref('', idref:${it})}
+        }
     }
 
-    public Opf openMetadata()
+    def generateGuide()
     {
-        contentOpf = "<metadata>" + newLine;
-        return this;
+
     }
-
-    public Opf closeMetadata()
-    {
-        contentOpf = "</metadata>" + newLine;
-        return this;
-    }
-
-    public Opf title(String title)
-    {
-        contentOpf = "<dc:title>${title}</dc:title>" + newLine;
-        return this;
-    }
-
-    public Opf creator(String creator)
-    {
-        contentOpf = "<dc:creator>${creator}</dc:creator>" + newLine;
-        return this;
-    }
-
-    public Opf identifier(String identifier)
-    {
-        contentOpf = "<dc:identifier id=\"bookid\">${identifier}</dc:identifier>" + newLine;
-        return this;
-    }
-
-    public Opf language(String language)
-    {
-        contentOpf = "<dc:language>${language}</dc:language>" + newLine;
-        return this;
-    }
-
-    public Opf date(String date)
-    {
-        contentOpf = "<dc:date>${date}</dc:date>" + newLine;
-        return this;
-    }
-
-    public Opf publisher(String publisher)
-    {
-        contentOpf = "<dc:publisher>${publisher}</dc:publisher>" + newLine;
-        return this;
-    }
-
-    public Opf copyRightInformation(String rights)
-    {
-        contentOpf = "<dc:rights>${rights}</dc:rights>" + newLine;
-        return this;
-    }
-
-    public Opf openManifest()
-    {
-        contentOpf = "<manifest>" + newLine;
-        return this;
-    }
-
-    public Opf closeManifest()
-    {
-        contentOpf = "</manifest>"+ newLine;
-        return this;
-    }
-
-    public Opf item(String id, String href, String mediaType)
-    {
-        contentOpf = "<item id=\"${id}\" href=\"${href}\" media-type=\"${mediaType}\" />"+newLine;
-        return this;
-    }
-
-    public Opf openSpine(String toc)
-    {
-        contentOpf = "<spine toc=\"${toc}\">"+newLine;
-        return this;
-    }
-
-    public Opf closeSpine()
-    {
-        contentOpf = "</spine>";
-        return this;
-    }
-
-    public Opf itemref(String idref, String linear)
-    {
-        contentOpf = "<itemref idref=\"${idref}\" linear=\"${linear}\"/>"+newLine;
-        return this;
-    }
-
-    public openGuide()
-    {
-        contentOpf = "<guide>"+newLine;
-        return this;
-    }
-
-    public closeGuide()
-    {
-        contentOpf = "</guide>"+newLine;
-        return  this;
-    }
-
-    public reference(String href, String type, String title)
-    {
-        contentOpf = "<reference href=\"${href}\" type=\"${type}\" title="${title}" "
-    }
-
-
 }

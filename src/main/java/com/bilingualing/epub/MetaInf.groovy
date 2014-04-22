@@ -1,31 +1,42 @@
 package com.bilingualing.epub
 
+import groovy.xml.MarkupBuilder
+import groovy.xml.StreamingMarkupBuilder;
 
 class MetaInf
 {
-    def containerXML;
+    def writer = new StringWriter();
+    def xml = new MarkupBuilder(writer);
+    def fullPath="full-path"
+    def mediaType="media-type"
 
-    public String container()
+
+    def generateContainer()
     {
-        containerXML = "<?xml version=\"1.0\"?>"+ System.getProperty("line.separator")+
-        "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">"+ System.getProperty("line.separator")+
-        "<rootfiles>"+ System.getProperty("line.separator")+
-        "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\" />" + System.getProperty("line.separator")+
-        "</rootfiles>"+ System.getProperty("line.separator")+
-        "</container>"
+        xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
+        xml.container(version:'1.0', xmlns:'urn:oasis:names:tc:opendocument:xmlns:container')
+        {
+            rootfiles
+            {
+                rootfile((fullPath):'OEBPS/content.opf',(mediaType):'application/oebps-package+xml')
+            }
+        }
 
-        return containerXML;
+        new File("container.xml").write(writer.toString())
     }
 
-    public String container(String fullPath)
+    def generateContainer(String fullPath)
     {
-        containerXML = "<?xml version=\"1.0\"?>"+ System.getProperty("line.separator")+
-                "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">"+ System.getProperty("line.separator")+
-                "<rootfiles>"+ System.getProperty("line.separator")+
-                "<rootfile full-path=\"${fullPath}\" media-type=\"application/oebps-package+xml\" />" + System.getProperty("line.separator")+
-                "</rootfiles>"+ System.getProperty("line.separator")+
-                "</container>"
+        xml.mkp.xmlDeclaration()
+        xml.container(version:'1.0', xmlns:'urn:oasis:names:tc:opendocument:xmlns:container')
+        {
+            rootfiles
+            {
+                rootfile((fullPath):'${fullPath}',(mediaType):'application/oebps-package+xml')
+            }
+        }
 
-        return containerXML;
+        new File("container.xml").write(writer.toString())
     }
+
 }

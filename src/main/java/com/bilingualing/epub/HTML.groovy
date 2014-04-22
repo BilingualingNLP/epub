@@ -1,145 +1,61 @@
 package com.bilingualing.epub
 
+import groovy.xml.MarkupBuilder
+
 class HTML
 {
-    def page;
+    def writer = new StringWriter();
+    def builder = new MarkupBuilder(writer);
 
-    HTML()
+    HTML(builder)
     {
-        super();
+        this.builder = builder
     }
 
-    public HTML openHtml()
+    def html(builder,String content)
     {
-        page = page+"<html>" + System.getProperty("line.separator");
-        return this;
+        builder.html()
     }
 
-    public HTML closeHtml()
+    def table(builder)
     {
-        page = page+"</html>" + System.getProperty("line.separator");
-        return this;
+        builder.table()
     }
 
-    public HTML openTable()
+    def body(builder)
     {
-        page = page+"<table>" + System.getProperty("line.separator");
-        return this;
+        builder.body()
     }
 
-    public HTML closeTable()
+    def head(builder)
     {
-        page = page+"</table>" + System.getProperty("line.separator");
-        return this;
+        builder.head()
     }
 
-    public HTML openBody()
+    def style(builder)
     {
-        page = page+"<body>" + System.getProperty("line.separator");
-        return this;
+        builder.style()
     }
 
-    public HTML closeBody()
+    def div(builder)
     {
-        page = page+"</body>" + System.getProperty("line.separator");
-        return this;
-    }
-    public HTML openStyle()
-    {
-        page = page+"<style>"+System.getProperty("line.separator");
-        return this;
+        builder.div()
     }
 
-    public HTML closeStyle()
+    def td(builder)
     {
-        page = page+"</style>"+System.getProperty("line.separator");
-        return this;
+        builder.td()
     }
 
-    public HTML addStyle(String klass, String attribute, String value)
+    def tr(builder)
     {
-        page = page+".${klass}: {${attribute} : ${value};}"+System.getProperty("line.separator");
-        return this;
+        builder.tr()
     }
 
-    public HTML openHead()
+    def p(builder)
     {
-        page = page+"<head>"+ System.getProperty("line.separator")+"<meta charset=\"utf-8\"/>";
-        return this;
-    }
-
-    public HTML closeHead()
-    {
-        page = page+"</head>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML openDiv()
-    {
-        page = page+"<div>"+ System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML openDiv(String id, String klass)
-    {
-        page = page+"<div id=${id} class=${klass}>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML openDiv(String attribute, Boolean idOrclass)
-    {
-        if(idOrclass == true)
-        {
-            page = page+"<div id=${attribute}>" + System.getProperty("line.separator");
-        }
-        else
-        {
-            page = page+"<div class=${attribute}>" + System.getProperty("line.separator");
-        }
-
-        return this;
+        builder.p()
     }
 
 
-    public HTML closeDiv()
-    {
-        page = page+"</div>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML openTD()
-    {
-        page = page+"<td>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML closeTD()
-    {
-        page = page+"</td>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML openTR()
-    {
-        page = page+"<tr>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML closeTR()
-    {
-        page = page+"</tr>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML openP()
-    {
-        page = page+"<p>" + System.getProperty("line.separator");
-        return this;
-    }
-
-    public HTML closeP()
-    {
-        page = page+"</p>" + System.getProperty("line.separator");
-        return this;
-    }
 }
